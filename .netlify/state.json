@@ -1,0 +1,22 @@
+{
+	"dbConnectionString": "postgres://localhost:63390/postgres",
+	"geolocation": {
+		"data": {
+			"city": "Whippany",
+			"country": {
+				"code": "US",
+				"name": "United States"
+			},
+			"subdivision": {
+				"code": "NJ",
+				"name": "New Jersey"
+			},
+			"timezone": "America/New_York",
+			"latitude": 40.8207,
+			"longitude": -74.4231,
+			"postalCode": "07981"
+		},
+		"timestamp": 1778448130447
+	},
+	"siteId": "6d379e18-5ed1-400e-9855-c2733dea16cf"
+}
