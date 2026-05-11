@@ -1,0 +1,14 @@
+[
+  {
+    "id": "ai",
+    "name": "AI Chat",
+    "url": "/page/tool/ai.html",
+    "img": "/_a/img/ai-chat.png"
+  },
+  {
+    "id": "yt",
+    "name": "VAPORyt",
+    "url": "/page/tool/yt.html",
+    "img": "/_a/img/vaporyt.png"
+  }
+]

@@ -1,0 +1,18 @@
+[
+    {
+      "id": "ai",
+      "name": "AI Chatbot",
+      "url": "/page/apps/ai.html"
+    },
+    {
+      "id": "music",
+      "name": "Music",
+      "url": "/page/apps/music.html"
+    },
+    {
+      "id": "emu",
+      "name": "Emulators",
+      "url": "/page/apps/emu.html"
+    }
+  ]
+  

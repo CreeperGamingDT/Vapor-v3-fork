@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="/scripts/opt.js"></script>
+    <link rel="stylesheet" href="/styles/defaults.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #0a111d;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        #chat {
+            width: 700px;
+            max-width: 95%;
+            background: none;
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        #messages {
+            width: 100%;
+            height: 500px;
+            overflow-y: scroll;
+            border-radius: 14px;
+            padding: 10px;
+            background-color: rgba(25, 40, 60, 0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            display: none;
+            position: relative;
+        }
+
+        .message-container {
+            display: flex;
+            flex-direction: column;
+            align-self: flex-start;
+            margin-bottom: 2px;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeInUp 0.05s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message {
+            padding: 6px 8px;
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.12);
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.85);
+            word-wrap: break-word;
+            max-width: 70%;
+            align-self: flex-start;
+        }
+
+        .my-message {
+            background-color: rgba(0, 122, 255, 0.8);
+            color: white;
+            align-self: flex-end;
+            max-width: 70%;
+            padding: 6px 8px;
+            border-radius: 8px;
+            margin-bottom: 2px;
+        }
+
+        .system-message {
+            text-align: center;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 5px;
+        }
+
+        .message-username {
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.6);
+            text-align: left;
+            margin-bottom: 2px;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .owner-icon {
+            color: var(--primary);
+            margin-right: 5px;
+        }
+
+        .input-container {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            position: relative;
+            gap: 10px;
+        }
+
+        input {
+            flex: 1 1 auto;
+            padding: 14px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.75);
+            background-color: rgba(0, 0, 0, 0.5);
+            width: 100%;
+            min-width: 0;
+        }
+
+        button {
+            width: 49px;
+            height: 49px;
+            border-radius: 14px;
+            background-color: rgba(255, 255, 255, 0.3);
+            color: white;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.15s ease;
+        }
+
+        button:disabled {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        button:hover {
+            background-color: rgba(255, 255, 255, 0.45);
+            transform: scale(1.01);
+        }
+
+        .char-counter {
+            position: absolute;
+            top: 8px;
+            right: 66px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .room-selection {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        #noti {
+            margin-bottom: 10px;
+        }
+
+        .room-button {
+            width: 65px;
+            padding: 10px;
+            border-radius: 14px;
+            background-color: rgba(255, 255, 255, 0.3);
+            color: white;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 17px;
+            transition: 0.27s ease;
+        }
+
+        .room-button:hover {
+            background-color: rgba(255, 255, 255, 0.45);
+            transform: scale(1.06);
+        }
+
+        #countdown {
+            position: absolute;
+            bottom: 8px;
+            right: 66px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.4);
+            display: none;
+        }
+
+        @media (max-width: 480px) {
+            #chat {
+                width: 90%;
+            }
+        }
+
+        #chatArea {
+            width: 100%;
+            display: none;
+        }
+
+        #usernameSection {
+            display: none;
+        }
+
+        #userCounter {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(255,255,255, 0.1);
+            border-radius: 12px;
+            padding: 10px 16px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        #userCounter i {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        #userTooltip {
+            position: fixed;
+            top: 70px;
+            left: 20px;
+            background-color: rgba(255,255,255, 0.1);
+            border-radius: 12px;
+            padding: 10px 16px;
+            font-size: 11px;
+            max-width: 200px;
+            max-height: 150px;
+            overflow-y: auto;
+            z-index: 20;
+            visibility: hidden;
+            opacity: 0;
+            transform: translateY(-2px);
+            transition: 0.2s ease;
+        }
+
+        #userTooltip.visible {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #userTooltip ul {
+            margin: 0;
+            padding: 0 0 0 15px;
+            list-style-type: none;
+        }
+
+        #userTooltip li {
+            padding: 3px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: left;
+        }
+
+        #userTooltip li:last-child {
+            border-bottom: none;
+        }
+    </style>
+    <style>
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: -99;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="/scripts/particle.js"></script>
+    <title>VAPORchat</title>
+</head>
+
+<body>
+    <div id="particles-js"></div>
+    <div id="chat">
+        <small style="margin: 10px;">Blue Crown (<i class="fa-solid fa-crown" style="color: var(--primary);"></i>) = OWNER</small>
+        <p id="noti">Select a room:</p>
+        <div id="roomSelection" class="room-selection">
+            <button class="room-button" onclick="joinRoom('r1')">1</button>
+            <button class="room-button" onclick="joinRoom('r2')">2</button>
+            <button class="room-button" onclick="joinRoom('r3')">3</button>
+        </div>
+
+        <div id="messages">
+            <div id="userCounter">
+                <i class="fas fa-users"></i> <span id="userCount">0</span>
+            </div>
+            <div id="userTooltip">
+                <ul id="userList"></ul>
+            </div>
+        </div>
+
+        <div id="usernameSection">
+            <div class="input-container">
+                <input id="username" type="text" placeholder="Username" autofocus maxlength="16" />
+                <button id="joinButton"><i class="fas fa-check"></i></button>
+                <div id="usernameCounter" class="char-counter">0/16</div>
+            </div>
+        </div>
+
+        <div id="chatArea">
+            <div class="input-container">
+                <input id="messageInput" type="text" placeholder="Type a message" disabled maxlength="250" />
+                <button id="sendButton" disabled>
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+                <div id="messageCounter" class="char-counter">0/250</div>
+                <div id="countdown"></div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+        const socket = io(
+            atob(
+                atob("YUhSMGNITTZMeTkyWVhCdmNpMWphR0YwTG05dWNtVnVaR1Z5TG1OdmJRPT0=")
+            )
+        );
+        let username = "";
+        let currentRoom = "";
+        let lastMessageAuthor = "";
+
+        function joinRoom(room) {
+            currentRoom = room;
+            document.getElementById("roomSelection").style.display = "none";
+            document.getElementById("noti").style.display = "none";
+            document.getElementById("usernameSection").style.display = "flex";
+        }
+
+        document.getElementById("username").addEventListener("input", () => {
+            const value = document.getElementById("username").value;
+            document.getElementById(
+                "usernameCounter"
+            ).textContent = `${value.length}/16`;
+        });
+
+        document.getElementById("username").addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+                document.getElementById("joinButton").click();
+            }
+        });
+
+        document.getElementById("joinButton").onclick = () => {
+            username = document.getElementById("username").value.trim();
+            if (username && currentRoom) {
+                socket.emit("join-room", {
+                    username: username,
+                    room: currentRoom
+                });
+                document.getElementById("usernameSection").style.display = "none";
+                document.getElementById("chatArea").style.display = "flex";
+                document.getElementById("messages").style.display = "flex";
+                document.getElementById("messageInput").disabled = false;
+                document.getElementById("sendButton").disabled = false;
+                document.getElementById("messageInput").focus();
+                startCountdown();
+            }
+        };
+
+        const emojiMap = {
+            ":sob:": "😭",
+            ":skull:": "💀",
+            ":thumbsup:": "👍",
+            ":wave:": "👋",
+            ":laugh:": "😂",
+            ":fire:": "🔥",
+            ":smile:": "😃",
+            ":crown:": "👑"
+        };
+
+        function replaceEmoji(inputElement) {
+            let text = inputElement.value;
+            for (const [shortcut, emoji] of Object.entries(emojiMap)) {
+                const regex = new RegExp(`${shortcut}(?=\\s|$)`, "g");
+                text = text.replace(regex, emoji);
+            }
+            inputElement.value = text;
+        }
+
+        document
+            .getElementById("messageInput")
+            .addEventListener("input", (event) => {
+                const inputElement = event.target;
+                replaceEmoji(inputElement);
+                const value = inputElement.value;
+                document.getElementById(
+                    "messageCounter"
+                ).textContent = `${value.length}/250`;
+            });
+
+        document
+            .getElementById("messageInput")
+            .addEventListener("keypress", (e) => {
+                if (
+                    e.key === "Enter" &&
+                    !document.getElementById("sendButton").disabled
+                ) {
+                    document.getElementById("sendButton").click();
+                }
+            });
+
+        document.getElementById("sendButton").onclick = () => {
+            const message = document.getElementById("messageInput").value.trim();
+            if (message) {
+                socket.emit("chat-message", {
+                    username: username,
+                    room: currentRoom,
+                    message: message,
+                });
+                document.getElementById("messageInput").value = "";
+                document.getElementById("messageCounter").textContent = `0/250`;
+                startCountdown();
+            }
+        };
+
+        function startCountdown() {
+            const cooldown = 1500;
+            const intervalTime = 100;
+            let remaining = cooldown;
+
+            const countdownDisplay = document.getElementById("countdown");
+            const sendButton = document.getElementById("sendButton");
+            sendButton.disabled = true;
+            countdownDisplay.style.display = "block";
+
+            const interval = setInterval(() => {
+                remaining -= intervalTime;
+                const seconds = (remaining / 1000).toFixed(1);
+                countdownDisplay.innerHTML = `<i class="fas fa-clock"></i>&nbsp;${seconds}s`;
+
+                if (remaining <= 0) {
+                    clearInterval(interval);
+                    countdownDisplay.style.display = "none";
+                    sendButton.disabled = false;
+                }
+            }, intervalTime);
+        }
+
+        const userCounter = document.getElementById("userCounter");
+        const userTooltip = document.getElementById("userTooltip");
+
+        userCounter.addEventListener("mouseenter", () => {
+            userTooltip.classList.add("visible");
+        });
+
+        userCounter.addEventListener("mouseleave", () => {
+            userTooltip.classList.remove("visible");
+        });
+
+        socket.on("user-list-update", (data) => {
+            document.getElementById("userCount").textContent = data.count;
+            
+            const userList = document.getElementById("userList");
+            userList.innerHTML = "";
+            
+            data.users.forEach(user => {
+                const li = document.createElement("li");
+                li.textContent = user;
+                userList.appendChild(li);
+            });
+        });
+
+        socket.on("chat-message", (data) => {
+            const messagesBox = document.getElementById("messages");
+            const messageContainer = document.createElement("div");
+
+            if (
+                data.username === "SYSTEM" &&
+                (data.message.includes(" joined the room.") ||
+                    data.message.includes(" left the room.") ||
+                    data.message.includes(" has been kicked from the room."))
+            ) {
+                messageContainer.classList.add("system-message");
+                messageContainer.innerHTML = data.message;
+            } else {
+                const container = document.createElement("div");
+                container.classList.add("message-container");
+
+                const isMyMessage = data.username === username;
+
+                const isSameAuthor =
+                    data.username === lastMessageAuthor &&
+                    data.username !== "SYSTEM";
+
+                if (!isSameAuthor && !isMyMessage) {
+                    const usernameLabel = document.createElement("div");
+                    usernameLabel.classList.add("message-username");
+
+                    if (data.isOwner) {
+                        const crownIcon = document.createElement("i");
+                        crownIcon.className = "fas fa-crown owner-icon";
+                        usernameLabel.appendChild(crownIcon);
+                    }
+
+                    const usernameText = document.createTextNode(data.username);
+                    usernameLabel.appendChild(usernameText);
+                    container.appendChild(usernameLabel);
+                }
+
+                const messageBubble = document.createElement("div");
+                messageBubble.textContent = data.message;
+
+                if (isMyMessage) {
+                    messageBubble.classList.add("my-message");
+                } else {
+                    messageBubble.classList.add("message");
+                }
+
+                container.appendChild(messageBubble);
+                messageContainer.appendChild(container);
+                lastMessageAuthor = data.username;
+            }
+
+            messagesBox.appendChild(messageContainer);
+            messagesBox.scrollTop = messagesBox.scrollHeight;
+        });
+
+        socket.on("user-joined", (data) => {
+            console.log(`Joined room ${data.room} as ${data.username}`);
+        });
+
+        socket.on("error", (message) => {
+            alert("Error: " + message);
+        });
+
+        socket.on("kicked", () => {
+            alert("You have been kicked from the room.");
+            window.location.reload();
+        });
+    </script>
+</body>
+
+</html>

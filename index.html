@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <script src="/sock/online/index.js"></script>
+
+    <script>
+      const splashTexts = [
+        "lights peed",
+        "vapor > interstellar",
+        "vapor is the best",
+        "six se- hell no.",
+        "javascript sucks",
+        "gatekeep this!!",
+        "no vibecoding here...",
+        "dont check the vm!",
+        "filters can’t stop me",
+        "one more game, i swear",
+        "i put the fun in dysfunctional",
+        "high score, low GPA",
+        "bdawg! r-r-right?",  // hi there
+        "v4 WHENNNNNNNNNNNNNNNNNNN",
+        "yknow what else is massive?",
+        "For your own safety, do not destroy vital testing apparatus",
+        "why was the math book sad? because it had too many problems",
+        "he is the one with broken touchpad",
+        "remember the public vm?",
+        "&quot;im gay&quot; - testuserforlearning",
+        "bonk you, dumb bonk!",
+        "&quot;im 12 🤓&quot;",
+        "👁️👄👁️ whatd you say?",
+        "v3 so far is the longest version!",
+        "What's brown and sticky? A stick.",
+        "My friend's bakery burned down. Now his business is toast.",
+        "q8j. is not a person. he is a person! not one, but is one.",
+        "why can't you trust stairs? because they're always up to something.",
+        "&quot;huh&quot; - petezah"
+      ];
+
+      window.addEventListener("DOMContentLoaded", () => {
+        const textEl = document.getElementById("loader-text");
+        if (textEl) textEl.innerHTML = splashTexts[Math.floor(Math.random() * splashTexts.length)];
+      });
+      window.addEventListener("load", () => {
+        const loader = document.getElementById("loader-overlay");
+        if (!loader) return;
+        setTimeout(() => {
+          loader.style.opacity = "0";
+          setTimeout(() => loader.remove(), 200);
+        }, 350);
+      });
+    </script>
+
+    <script src="/scripts/opt.js"></script>
+    <script src="/scripts/theme.js"></script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VAPŌR v3</title>
+
+    <link href="/styles/defaults.css" rel="stylesheet" />
+    <link href="/styles/index.css" rel="stylesheet" />
+    <link href="/styles/sidebar.css" rel="stylesheet" />
+
+    <link rel="icon" href="/_a/logo.new.png" type="image/x-icon" />
+
+    <!-- google analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-TWLB9ZV0LR"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-TWLB9ZV0LR");
+    </script>
+
+    <!-- SEO Meta -->
+    <meta name="title" content="☄️ VAPOR v3" />
+    <meta name="description" content="Your #1 destination for unblōcking." />
+    <meta
+      name="keywords"
+      content="games, pr0xy, vm, virtual machine, movies, emulators, ai, fun, unbl0ck, unbl0cked" />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="language" content="English" />
+    <meta name="author" content="technonyte" />
+
+    <!-- shut up google-->
+    <link rel="canonical" href="https://vapor.my/" />
+
+    <!-- Discord embed -->
+    <meta property="og:title" content="☄️ VAPOR v3" />
+    <meta name="theme-color" content="#49517c" />
+    <meta name="msapplication-TileColor" content="#49517c" />
+    <meta property="og:image" content="/_a/logo.png" />
+    <meta
+      property="og:description"
+      content="Your #1 destination for unblōcking." />
+
+    <style>
+      .quote-line {
+        border-left: 2px solid rgba(255,255,255,0.3);
+        padding-left: 12px;
+        display: inline-block;
+        line-height: 1.5em;
+      }
+
+      .modal-icon {
+        vertical-align: middle;
+        height: 1.6em;
+        margin-right: 4px;
+        transform: translateY(-2px);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="loader-overlay">
+      <div class="loader-content">
+        <img src="/_a/logo.new.png" id="loader-logo" alt="Vapor Logo"/>
+        <div id="loader-text">...</div>
+      </div>
+    </div>
+
+    <nav class="sidebar">
+      <div class="nav-top" id="nav-top-container">
+        <div id="nav-items"></div>
+        <div id="nav-items-extras"></div>
+        <div id="nav-items-nest"></div>
+      </div>
+
+      <div class="nav-bottom">
+        <div class="quick-actions">
+          <a class="quick-action-btn sidebar-toggle-btn" title="Minimize Sidebar" aria-label="Minimize Sidebar" aria-pressed="false"><i class="fa-solid fa-angle-left"></i></a>
+          <a class="quick-action-btn whatsnew-btn"><i class="fa-solid fa-megaphone"></i></a>
+          <a class="quick-action-btn extras-btn"><i class="fa-solid fa-ellipsis"></i></a>
+          <a class="quick-action-btn settings-btn"><i class="fa-regular fa-cog"></i></a>
+        </div>
+
+        <a class="nav-item">
+          <div class="icon-container">
+            <img src="/_a/logo.new.png" style="width: 30px" />
+          </div>
+          <span class="nav-text" style="margin-left: 0px">
+            VAPOR <strong>v3</strong><span id="commit-id"
+              ></span
+            >
+          </span>
+        </a>
+      </div>
+    </nav>
+
+    <div class="overlay"></div>
+
+    <div class="content">
+      <iframe id="frame" src="/page/home.html"></iframe>
+    </div>
+
+    <div id="modal-overlay" class="modal-overlay"></div>
+
+    <div id="main-modal" class="main-modal">
+      <div class="modal-content">
+        <h2 class="modal-title">
+          <span id="main-modal-icon-container"></span>
+          <span id="main-modal-title"></span>
+        </h2>
+        <p class="modal-body" id="main-modal-body"></p>
+        <button id="main-modal-close" class="modal-button"></button>
+      </div>
+    </div>
+
+    <div id="dyn-modal" class="main-modal">
+      <div class="modal-content">
+        <h2 class="modal-title">
+            <span id="dyn-modal-icon-container"></span>
+            <span id="dyn-modal-title"></span>
+        </h2>
+        <p class="modal-body" id="dyn-modal-body"></p>
+        <button id="dyn-modal-close" class="modal-button"></button>
+      </div>
+    </div>
+
+    <script src="scripts/navi.js"></script>
+    <script src="scripts/navigation.js"></script>
+    <script src="scripts/commit.js"></script>
+
+    <script>
+      const mainModalConfig = {
+        icon: "/_a/logo.new.png",
+        title: "VAPOR 3.8/9",
+        content: "<span style='font-size: 1.25rem;'>🏆 Introducing Playline</span>\n<strong>21,000 games</strong>, right at your fingertips.<br><small>Playline is in beta, not all games may work. Report them in the Discord!</small>\n\n- 🦾 AI has been fixed\n- 🔍 New Browser UI + Features\n- ❔ New feature coming soon",
+        buttonText: "Woah",
+        quoted: true,
+        ishtml: true,
+      };
+    </script>
+    <script>
+      const mainModal = document.getElementById("main-modal");
+      const overlay = document.getElementById("modal-overlay");
+      const mainModalCloseBtn = document.getElementById("main-modal-close");
+
+      function createIconElement(icon) {
+        if (icon.startsWith("fa:")) {
+          const i = document.createElement("i");
+          i.className = `modal-icon ${icon.substring(3)}`;
+          return i;
+        } else {
+          const img = document.createElement("img");
+          img.src = icon;
+          img.className = "modal-icon";
+          return img;
+        }
+      }
+
+      function populateModal(modalElement, { icon, title, content, buttonText, isHtml = false, quoted = false }) {
+        const iconContainer = modalElement.querySelector('.modal-title span:first-child');
+        const titleEl = modalElement.querySelector('.modal-title span:last-child');
+        const bodyEl = modalElement.querySelector(".modal-body");
+        const buttonEl = modalElement.querySelector(".modal-button");
+
+        iconContainer.innerHTML = '';
+        if (icon) iconContainer.appendChild(createIconElement(icon));
+
+        titleEl.textContent = title;
+
+        if (quoted) {
+          const sections = content.split(/\n\s*\n/);
+          bodyEl.innerHTML = sections.map(block => {
+            const lines = block.split(/\n/);
+            const joined = lines.join("<br>");
+            return `<span class="quote-line">${joined}</span>`;
+          }).join("<br><br>");
+        } 
+        else if (isHtml) {
+          bodyEl.innerHTML = content;
+        } 
+        else {
+          bodyEl.innerHTML = content
+            .split("\n")
+            .map(line => line.replace(/</g, "&lt;").replace(/>/g, "&gt;")) // escape
+            .join("<br>");
+        }
+
+        buttonEl.textContent = buttonText;
+      }
+
+
+      function showModal() {
+        mainModal.classList.add("active");
+        overlay.classList.add("active");
+      }
+
+      function hideModal() {
+        mainModal.classList.remove("active");
+        overlay.classList.remove("active");
+      }
+      
+      window.showModal = showModal;
+
+      mainModalCloseBtn.addEventListener("click", () => {
+        localStorage.setItem("savedModal", JSON.stringify(mainModalConfig));
+        hideModal();
+      });
+      
+      window.addEventListener("load", () => {
+        populateModal(mainModal, mainModalConfig);
+        const savedModal = localStorage.getItem("savedModal");
+        if (savedModal !== JSON.stringify(mainModalConfig)) {
+          showModal();
+        }
+      });
+      
+      const dynModal = document.getElementById("dyn-modal");
+      const dynModalCloseBtn = document.getElementById("dyn-modal-close");
+
+      function showDynModal(title, icon, text, btnName) {
+        populateModal(dynModal, { icon, title, content: text, buttonText: btnName });
+        dynModal.classList.add("active");
+        overlay.classList.add("active");
+      }
+      
+      function hideDynModal() {
+          dynModal.classList.remove("active");
+          overlay.classList.remove("active");
+      }
+
+      dynModalCloseBtn.addEventListener("click", hideDynModal);
+
+      window.showDynModal = showDynModal;
+
+    </script>
+  </body>
+</html>

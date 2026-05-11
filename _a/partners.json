@@ -1,0 +1,68 @@
+[
+  {
+    "id": "vortex",
+    "name": "Vortex",
+    "url": "https://vortexos.net/",
+    "img": "/_a/img/partners/vortex.png"
+  },
+  {
+    "id": "gn-math",
+    "name": "gn-math",
+    "url": "https://gn-math.github.io/",
+    "img": "/_a/img/partners/gn-math.png"
+  },
+  {
+    "id": "glseries",
+    "name": "GLSeriesDev",
+    "url": "https://glseries.net",
+    "img": "/_a/img/partners/gls.png"
+  },
+  {
+    "id": "ajh",
+    "name": "AJH's Vault",
+    "url": "https://edu.ajh.college/",
+    "img": "/_a/img/partners/ajh.png"
+  },
+  {
+    "id": "bolt",
+    "name": "Bolt Un.bl0cker",
+    "url": "https://boltunblocker.com/",
+    "img": "/_a/img/partners/bolt.jpeg"
+  },
+  {
+    "id": "truffled",
+    "name": "Truffled",
+    "url": "https://truffled.lol/",
+    "img": "/_a/img/partners/truffled.png"
+  },
+  {
+    "id": "frogie",
+    "name": "Frogie's Arcade",
+    "url": "https://frogiesarcade.win/",
+    "img": "/_a/img/partners/frogie.png"
+  },
+  {
+    "id": "uniub",
+    "name": "UniUB",
+    "url": "https://thisisschool.work",
+    "img": "/_a/img/partners/uniub.png"
+  },
+  {
+    "id": "petezah",
+    "name": "PeteZahGames",
+    "url": "https://petezahgames.com/",
+    "img": "/_a/img/partners/petezah.png"
+  },
+  {
+    "id": "secured",
+    "name": "Secured Web",
+    "url": "https://secured.wiki",
+    "img": "/_a/img/partners/secured-uses-chatgpt.png"
+  },
+  {
+    "id": "lunar",
+    "name": "Lunar",
+    "url": "https://lunaron.top",
+    "img": "/_a/img/partners/lunar.png"
+  }
+]

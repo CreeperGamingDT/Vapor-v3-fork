@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie</title>
+        <link rel="stylesheet" href="/styles/defaults.css" />
+
+    <link rel="stylesheet" href="/styles/global.css">
+    <style>
+      body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: "Inter", Arial, sans-serif;
+        background: #181824;
+        color: white;
+      }
+      #dropdown-container {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 1000;
+        background: none;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+        padding: 0px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      #source-select {
+        background: rgba(68, 79, 96, 0.5);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 16px;
+        font-size: 16px;
+        backdrop-filter: blur(10px);
+        font-family: Inter, sans-serif;
+        box-shadow: 0 1px 6px rgba(0,0,0,0.12);
+      }
+      .player-iframe {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        border: none;
+      }
+    </style>
+</head>
+<body>
+    <div id="dropdown-container">
+      <label for="source-select" style="display:none;">Source:</label>
+      <select id="source-select"></select>
+    </div>
+    <div id="player-container"></div>
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const movieId = params.get('id');
+      const sourceSelect = document.getElementById('source-select');
+      const playerContainer = document.getElementById('player-container');
+
+      if (!movieId) {
+        playerContainer.innerText = 'No movie ID provided.';
+      } else {
+        fetch('/_a/sources.json')
+          .then(res => res.json())
+          .then(sources => {
+            sources.forEach(src => {
+              if (src.urls && src.urls.movie) {
+                const opt = document.createElement('option');
+                opt.value = src.id;
+                opt.textContent = src.name;
+                sourceSelect.appendChild(opt);
+              }
+            });
+            if (sourceSelect.options.length > 0) {
+              sourceSelect.selectedIndex = 0;
+              embedMovie(sources, sourceSelect.value);
+            }
+            sourceSelect.addEventListener('change', () => {
+              embedMovie(sources, sourceSelect.value);
+            });
+          })
+          .catch(() => {
+            playerContainer.innerText = 'Failed to load sources.';
+          });
+      }
+
+      function embedMovie(sources, sourceId) {
+        playerContainer.innerHTML = '';
+        const src = sources.find(s => s.id === sourceId);
+        if (!src || !src.urls || !src.urls.movie) {
+          playerContainer.innerText = 'Source not found.';
+          return;
+        }
+        let url = src.urls.movie.replace('{id}', movieId);
+        const iframe = document.createElement('iframe');
+        iframe.src = url;
+        iframe.className = 'player-iframe';
+        iframe.allowFullscreen = true;
+        playerContainer.appendChild(iframe);
+      }
+    </script>
+</body>
+</html>
