@@ -30,5 +30,5 @@ app.get("*", (req, res) => {
         return res.redirect("/");
     }
 
-    res.sendFile("protected/index.html");
+    res.sendFile("/protected/index.html");
 });
