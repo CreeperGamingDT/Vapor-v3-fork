@@ -3,7 +3,7 @@ const path = require("path");
 
 const { isAuthenticated } = require("./auth");
 
-const ROOT_DIR = "/";
+const ROOT_DIR = "./";
 const DEFAULT_ENTRY = path.join(ROOT_DIR, "default", "index.html");
 const PROTECTED_ROOT = path.join(ROOT_DIR, "protected");
 
