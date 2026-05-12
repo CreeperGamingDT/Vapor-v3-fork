@@ -1,0 +1,20 @@
+[build]
+  publish = "default"
+
+[[redirects]]
+  from = "/api/out"
+  to = "/.netlify/functions/out"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/word"
+  to = "/.netlify/functions/word"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/app"
+  status = 200
+  force = true

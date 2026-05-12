@@ -1,0 +1,633 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Word Grid</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --panel: rgba(12, 18, 36, 0.82);
+        --panel-border: rgba(138, 165, 255, 0.18);
+        --text: #edf2ff;
+        --muted: #91a0c6;
+        --accent: #7fd6ff;
+        --accent-2: #6f89ff;
+        --correct: #2dbb76;
+        --present: #d0a42d;
+        --absent: rgba(255, 255, 255, 0.14);
+        --empty: rgba(255, 255, 255, 0.06);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Arial, sans-serif;
+        background:
+          radial-gradient(circle at top, rgba(111, 137, 255, 0.28), transparent 32%),
+          radial-gradient(circle at bottom right, rgba(127, 214, 255, 0.18), transparent 28%),
+          linear-gradient(180deg, #08101d 0%, #0d1530 100%);
+        color: var(--text);
+      }
+
+      main {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+
+      .shell {
+        width: min(100%, 560px);
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        border-radius: 24px;
+        padding: 28px;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 20px 70px rgba(0, 0, 0, 0.38);
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: clamp(2rem, 5vw, 2.8rem);
+        letter-spacing: 0.04em;
+      }
+
+      p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-top: 24px;
+        flex-wrap: wrap;
+      }
+
+      .toolbar label,
+      .legend span,
+      .result-meta span {
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+
+      select,
+      input,
+      button {
+        border: 0;
+        border-radius: 14px;
+        font: inherit;
+      }
+
+      select,
+      input {
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--text);
+      }
+
+      select {
+        padding: 12px 14px;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      .secondary-btn,
+      .primary-btn,
+      .retry-btn {
+        padding: 12px 16px;
+        font-weight: 700;
+      }
+
+      .primary-btn,
+      .retry-btn {
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+        color: #07101c;
+      }
+
+      .secondary-btn {
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--text);
+      }
+
+      button:disabled,
+      input:disabled,
+      select:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+      }
+
+      .guess-bar {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        margin-top: 20px;
+      }
+
+      #guess-input {
+        width: 100%;
+        padding: 14px 16px;
+        text-transform: lowercase;
+        letter-spacing: 0.16em;
+      }
+
+      .board {
+        display: grid;
+        gap: 10px;
+        margin-top: 24px;
+      }
+
+      .row,
+      .result-guess-row {
+        display: grid;
+        gap: 8px;
+      }
+
+      .cell,
+      .result-cell {
+        aspect-ratio: 1 / 1;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        background: var(--empty);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        min-height: 52px;
+      }
+
+      .result-cell {
+        min-height: 42px;
+      }
+
+      .cell.filled,
+      .result-cell.filled {
+        border-color: rgba(255, 255, 255, 0.18);
+      }
+
+      .cell.correct,
+      .result-cell.correct {
+        background: rgba(45, 187, 118, 0.18);
+        border-color: rgba(45, 187, 118, 0.6);
+      }
+
+      .cell.present,
+      .result-cell.present {
+        background: rgba(208, 164, 45, 0.18);
+        border-color: rgba(208, 164, 45, 0.6);
+      }
+
+      .cell.absent,
+      .result-cell.absent {
+        background: var(--absent);
+      }
+
+      .status {
+        min-height: 24px;
+        margin-top: 16px;
+        font-size: 0.95rem;
+        color: var(--accent);
+      }
+
+      .legend {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-top: 18px;
+      }
+
+      .legend-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .legend-swatch {
+        width: 16px;
+        height: 16px;
+        border-radius: 6px;
+      }
+
+      .legend-swatch.correct {
+        background: rgba(45, 187, 118, 0.7);
+      }
+
+      .legend-swatch.present {
+        background: rgba(208, 164, 45, 0.7);
+      }
+
+      .legend-swatch.absent {
+        background: rgba(255, 255, 255, 0.16);
+      }
+
+      .result-screen {
+        margin-top: 22px;
+        padding: 18px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .result-screen[hidden] {
+        display: none;
+      }
+
+      .result-screen h2 {
+        margin: 0;
+        font-size: 1.1rem;
+      }
+
+      .result-screen p {
+        margin-top: 8px;
+      }
+
+      .result-meta {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+      }
+
+      .result-meta strong {
+        color: var(--text);
+        letter-spacing: 0.08em;
+      }
+
+      .result-guesses {
+        display: grid;
+        gap: 10px;
+        margin-top: 16px;
+      }
+
+      .retry-btn {
+        margin-top: 18px;
+      }
+
+      @media (max-width: 560px) {
+        .shell {
+          padding: 20px;
+          border-radius: 18px;
+        }
+
+        .guess-bar {
+          grid-template-columns: 1fr;
+        }
+
+        .primary-btn,
+        .secondary-btn,
+        .retry-btn,
+        select,
+        input {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="shell">
+        <h1>Word Grid</h1>
+        <p>
+          Choose a word length, pull a random word, and solve the board in six guesses.
+          You can start a fresh round whenever you want.
+        </p>
+
+        <div class="toolbar">
+          <label for="length-select">Length</label>
+          <select id="length-select" aria-label="Word length"></select>
+          <button id="new-word-btn" class="secondary-btn" type="button">New word</button>
+        </div>
+
+        <form id="guess-form" autocomplete="off">
+          <div class="guess-bar">
+            <input
+              id="guess-input"
+              name="guess"
+              type="text"
+              inputmode="text"
+              spellcheck="false"
+              placeholder="Enter a guess"
+              maxlength="5" />
+            <button id="submit-btn" class="primary-btn" type="submit">Submit Guess</button>
+          </div>
+        </form>
+
+        <div class="status" id="status" aria-live="polite"></div>
+        <div class="board" id="board"></div>
+
+        <section class="result-screen" id="result-screen" hidden>
+          <h2 id="result-title">Round complete</h2>
+          <p id="result-copy"></p>
+          <div class="result-meta">
+            <span>Answer: <strong id="result-answer"></strong></span>
+            <span>Guesses: <strong id="result-count"></strong></span>
+          </div>
+          <div class="result-guesses" id="result-guesses"></div>
+          <button id="retry-btn" class="retry-btn" type="button">Retry</button>
+        </section>
+
+        <div class="legend">
+          <span class="legend-chip"><span class="legend-swatch correct"></span><span>Correct spot</span></span>
+          <span class="legend-chip"><span class="legend-swatch present"></span><span>Wrong spot</span></span>
+          <span class="legend-chip"><span class="legend-swatch absent"></span><span>Not in word</span></span>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const maxAttempts = 6;
+      const board = document.getElementById("board");
+      const statusEl = document.getElementById("status");
+      const form = document.getElementById("guess-form");
+      const input = document.getElementById("guess-input");
+      const submitBtn = document.getElementById("submit-btn");
+      const lengthSelect = document.getElementById("length-select");
+      const newWordBtn = document.getElementById("new-word-btn");
+      const resultScreen = document.getElementById("result-screen");
+      const resultTitle = document.getElementById("result-title");
+      const resultCopy = document.getElementById("result-copy");
+      const resultAnswer = document.getElementById("result-answer");
+      const resultCount = document.getElementById("result-count");
+      const resultGuesses = document.getElementById("result-guesses");
+      const retryBtn = document.getElementById("retry-btn");
+
+      const state = {
+        length: 5,
+        word: "",
+        guesses: [],
+        currentInput: "",
+        loading: false,
+        locked: false
+      };
+
+      function setStatus(message, tone) {
+        statusEl.textContent = message;
+        statusEl.style.color = tone === "error"
+          ? "#ff9e9e"
+          : tone === "success"
+            ? "#8effbf"
+            : "var(--accent)";
+      }
+
+      function sanitizeGuess(value) {
+        return value.toLowerCase().replace(/[^a-z0-9]/g, "");
+      }
+
+      function buildSelectOptions() {
+        for (let length = 3; length <= 10; length += 1) {
+          const option = document.createElement("option");
+          option.value = String(length);
+          option.textContent = `${length} letters`;
+          lengthSelect.appendChild(option);
+        }
+      }
+
+      function setInputsDisabled(disabled) {
+        input.disabled = disabled;
+        submitBtn.disabled = disabled;
+
+        if (!disabled) {
+          input.focus();
+        }
+      }
+
+      function resetResultScreen() {
+        resultScreen.hidden = true;
+        resultTitle.textContent = "Round complete";
+        resultCopy.textContent = "";
+        resultAnswer.textContent = "";
+        resultCount.textContent = "0";
+        resultGuesses.innerHTML = "";
+      }
+
+      function evaluateGuess(guess, word) {
+        const result = Array.from({ length: guess.length }, () => "absent");
+        const remaining = word.split("");
+
+        for (let index = 0; index < guess.length; index += 1) {
+          if (guess[index] === remaining[index]) {
+            result[index] = "correct";
+            remaining[index] = null;
+          }
+        }
+
+        for (let index = 0; index < guess.length; index += 1) {
+          if (result[index] === "correct") continue;
+
+          const matchIndex = remaining.indexOf(guess[index]);
+          if (matchIndex !== -1) {
+            result[index] = "present";
+            remaining[matchIndex] = null;
+          }
+        }
+
+        return result;
+      }
+
+      function renderBoard() {
+        board.innerHTML = "";
+
+        for (let rowIndex = 0; rowIndex < maxAttempts; rowIndex += 1) {
+          const row = document.createElement("div");
+          row.className = "row";
+          row.style.gridTemplateColumns = `repeat(${state.length}, minmax(0, 1fr))`;
+
+          const committed = state.guesses[rowIndex];
+          const preview = rowIndex === state.guesses.length ? state.currentInput : "";
+
+          for (let cellIndex = 0; cellIndex < state.length; cellIndex += 1) {
+            const cell = document.createElement("div");
+            cell.className = "cell";
+
+            if (committed) {
+              const letter = committed.guess[cellIndex] || "";
+              cell.textContent = letter;
+              cell.classList.add("filled", committed.result[cellIndex] || "absent");
+            } else if (preview) {
+              const letter = preview[cellIndex] || "";
+              cell.textContent = letter;
+              if (letter) {
+                cell.classList.add("filled");
+              }
+            }
+
+            row.appendChild(cell);
+          }
+
+          board.appendChild(row);
+        }
+      }
+
+      function renderResultGuesses() {
+        resultGuesses.innerHTML = "";
+
+        for (const entry of state.guesses) {
+          const row = document.createElement("div");
+          row.className = "result-guess-row";
+          row.style.gridTemplateColumns = `repeat(${state.length}, minmax(0, 1fr))`;
+
+          for (let index = 0; index < state.length; index += 1) {
+            const cell = document.createElement("div");
+            cell.className = "result-cell filled";
+            cell.textContent = entry.guess[index] || "";
+            cell.classList.add(entry.result[index] || "absent");
+            row.appendChild(cell);
+          }
+
+          resultGuesses.appendChild(row);
+        }
+      }
+
+      function showResultScreen(title, copy) {
+        resultTitle.textContent = title;
+        resultCopy.textContent = copy;
+        resultAnswer.textContent = state.word.toUpperCase();
+        resultCount.textContent = String(state.guesses.length);
+        renderResultGuesses();
+        resultScreen.hidden = false;
+      }
+
+      async function loadWord(options = {}) {
+        const draftGuess = sanitizeGuess(options.draft ?? input.value).slice(0, state.length);
+        const headers = {
+          "X-Grid-Size": String(state.length)
+        };
+
+        if (options.includeDraft) {
+          headers["X-Grid-Fill"] = draftGuess;
+        }
+
+        state.loading = true;
+        state.locked = true;
+        state.word = "";
+        state.guesses = [];
+        state.currentInput = "";
+        input.value = "";
+        input.maxLength = state.length;
+        resetResultScreen();
+        renderBoard();
+        setInputsDisabled(true);
+        setStatus("Loading a random word...", "info");
+
+        try {
+          const response = await fetch("/api/word", {
+            credentials: "same-origin",
+            headers
+          });
+
+          if (response.status === 205) {
+            window.location.href = "/";
+            return;
+          }
+
+          if (!response.ok) {
+            throw new Error("Could not load word");
+          }
+
+          const payload = await response.json();
+          state.word = String(payload.word || "").toLowerCase();
+          state.locked = false;
+          setInputsDisabled(false);
+          setStatus(
+            payload.fallback
+              ? "Loaded a fallback word because the external source was unavailable."
+              : "New word ready.",
+            "info"
+          );
+        } catch (error) {
+          state.locked = true;
+          setInputsDisabled(true);
+          setStatus("Word source failed to load. Try again.", "error");
+        } finally {
+          state.loading = false;
+          renderBoard();
+        }
+      }
+
+      function commitGuess(guess, result) {
+        state.guesses.push({ guess, result });
+        state.currentInput = "";
+        input.value = "";
+        renderBoard();
+      }
+
+      async function handleGuessSubmit(event) {
+        event.preventDefault();
+
+        if (state.loading || state.locked) return;
+
+        const guess = sanitizeGuess(input.value);
+
+        if (guess.length !== state.length) {
+          setStatus(`Enter exactly ${state.length} characters.`, "error");
+          return;
+        }
+
+        if (!state.word) {
+          setStatus("No active word is loaded yet.", "error");
+          return;
+        }
+
+        const result = evaluateGuess(guess, state.word);
+        commitGuess(guess, result);
+
+        if (guess === state.word) {
+          state.locked = true;
+          setInputsDisabled(true);
+          setStatus("Solved.", "success");
+          showResultScreen("Solved", "Nice work. Start another round when you're ready.");
+          return;
+        }
+
+        if (state.guesses.length >= maxAttempts) {
+          state.locked = true;
+          setInputsDisabled(true);
+          setStatus("Round complete.", "error");
+          showResultScreen("Round complete", "Here is the answer and every guess from this round.");
+          return;
+        }
+
+        setStatus(`${maxAttempts - state.guesses.length} guesses remaining.`, "info");
+      }
+
+      input.addEventListener("input", () => {
+        state.currentInput = sanitizeGuess(input.value).slice(0, state.length);
+        if (input.value !== state.currentInput) {
+          input.value = state.currentInput;
+        }
+        renderBoard();
+      });
+
+      form.addEventListener("submit", handleGuessSubmit);
+
+      lengthSelect.addEventListener("change", () => {
+        state.length = Number(lengthSelect.value);
+        loadWord();
+      });
+
+      newWordBtn.addEventListener("click", () => {
+        loadWord({
+          includeDraft: true,
+          draft: input.value
+        });
+      });
+
+      retryBtn.addEventListener("click", () => {
+        loadWord();
+      });
+
+      buildSelectOptions();
+      lengthSelect.value = String(state.length);
+      loadWord();
+    </script>
+  </body>
+</html>

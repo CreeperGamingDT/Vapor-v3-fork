@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
   <head>
 
@@ -27,8 +27,8 @@
         "remember the public vm?",
         "&quot;im gay&quot; - testuserforlearning",
         "bonk you, dumb bonk!",
-        "&quot;im 12 🤓&quot;",
-        "👁️👄👁️ whatd you say?",
+        "&quot;im 12 🤨&quot;",
+        "🤡🤔🤡 whatd you say?",
         "v3 so far is the longest version!",
         "What's brown and sticky? A stick.",
         "My friend's bakery burned down. Now his business is toast.",
@@ -56,7 +56,7 @@
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VAPŌR v3</title>
+    <title>VAPOR v3</title>
 
     <link href="/styles/defaults.css" rel="stylesheet" />
     <link href="/styles/index.css" rel="stylesheet" />
@@ -138,6 +138,7 @@
           <a class="quick-action-btn whatsnew-btn"><i class="fa-solid fa-megaphone"></i></a>
           <a class="quick-action-btn extras-btn"><i class="fa-solid fa-ellipsis"></i></a>
           <a class="quick-action-btn settings-btn"><i class="fa-regular fa-cog"></i></a>
+          <a class="quick-action-btn auth-sidebar-signout" id="auth-sidebar-signout" title="Sign Out" aria-label="Sign Out"><i class="fa-solid fa-right-from-bracket"></i></a>
         </div>
 
         <a class="nav-item">
@@ -191,8 +192,11 @@
       const mainModalConfig = {
         icon: "/_a/logo.new.png",
         title: "VAPOR 3.8/9",
-        content: "<span style='font-size: 1.25rem;'>🏆 Introducing Playline</span>\n<strong>21,000 games</strong>, right at your fingertips.<br><small>Playline is in beta, not all games may work. Report them in the Discord!</small>\n\n- 🦾 AI has been fixed\n- 🔍 New Browser UI + Features\n- ❔ New feature coming soon",
-        buttonText: "Woah",
+        content: `<span>- UI tweaks
+          - Added Dev Tools
+          - Added hidden password protection
+          </span>`,
+        buttonText: "Nice",
         quoted: true,
         ishtml: true,
       };
@@ -240,7 +244,7 @@
         else {
           bodyEl.innerHTML = content
             .split("\n")
-            .map(line => line.replace(/</g, "&lt;").replace(/>/g, "&gt;")) // escape
+            .map(line => line.replace(/</g, "&lt;").replace(/>/g, "&gt;"))
             .join("<br>");
         }
 
@@ -291,6 +295,27 @@
 
       window.showDynModal = showDynModal;
 
+    </script>
+      <script>
+      const sidebarSignOutBtn = document.getElementById("auth-sidebar-signout");
+
+      if (sidebarSignOutBtn) {
+        sidebarSignOutBtn.addEventListener("click", async (event) => {
+          event.preventDefault();
+          sidebarSignOutBtn.style.pointerEvents = "none";
+          sidebarSignOutBtn.style.opacity = "0.7";
+
+          try {
+            await fetch("/api/out", {
+              method: "POST",
+              credentials: "same-origin"
+            });
+          } catch (error) {
+          }
+
+          window.location.href = "/";
+        });
+      }
     </script>
   </body>
 </html>
