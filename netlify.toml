@@ -1,5 +1,5 @@
 [build]
-  publish = "default"
+  publish = "."
 
 [[redirects]]
   from = "/api/out"
