@@ -191,7 +191,15 @@ function injectSignOut(html) {
     return `${html}\n${SIGN_OUT_SNIPPET}`;
 }
 
-function buildFileResponse(filePath, options = {}) {
+function serveFile(filePath, options = {}) {
+    if (!fs.existsSync(filePath)) {
+        console.error(`File not found: ${filePath}`);
+        return {
+            statusCode: 404,
+            body: "Not found."
+        };
+    }
+
     const contentType = getContentType(filePath);
     const headers = {
         "Content-Type": contentType,
@@ -234,24 +242,32 @@ exports.handler = async function(event) {
     if (method !== "GET" && method !== "HEAD") {
         return {
             statusCode: 405,
-            headers: {
-                Allow: "GET, HEAD",
-                "Content-Type": "text/plain; charset=utf-8"
-            },
-            body: "Method not allowed"
+            body: "Method not allowed."
         };
     }
 
-    const pathname = getRequestPath(event);
-    const authenticated = isAuthenticated(event.headers || {});
+    // not logged in
+    if (!isAuthenticated(event.headers || {})) {
+        const pathname =
+            event.rawUrl
+                ? new URL(event.rawUrl).pathname
+                : event.path || "/";
 
-    if (!authenticated) {
-        return buildFileResponse(DEFAULT_ENTRY, { method });
+        const filePath = safeResolve(DEFAULT_ROOT, pathname);
+
+        return serveFile(filePath || PUBLIC_INDEX, {
+            method
+        });
     }
 
-    const protectedFile = findProtectedFile(pathname);
+    const pathname =
+        event.rawUrl
+            ? new URL(event.rawUrl).pathname
+            : event.path || "/";
 
-    if (!protectedFile) {
+    const filePath = safeResolve(PROTECTED_ROOT, pathname);
+
+    if (!filePath) {
         return {
             statusCode: 404,
             headers: {
