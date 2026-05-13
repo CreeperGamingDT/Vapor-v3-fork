@@ -1,14 +1,13 @@
+functionsDirectory = "C:\\Users\\pseen\\OneDrive2\\OneDrive\\Desktop\\Programmed Games\\HTML\\Vapor v3 fork\\netlify\\functions"
+functionsDirectoryOrigin = "default"
+redirectsOrigin = "config"
 plugins = []
 headers = []
-redirects = []
-
-[functions]
-
-[functions."*"]
 
 [build]
-publish = "C:\\Users\\pseen\\OneDrive2\\OneDrive\\Desktop\\Programmed Games\\HTML\\DOTGUI\\Scramjet-Static"
-publishOrigin = "default"
+publish = "C:\\Users\\pseen\\OneDrive2\\OneDrive\\Desktop\\Programmed Games\\HTML\\Vapor v3 fork"
+publishOrigin = "config"
+functions = "C:\\Users\\pseen\\OneDrive2\\OneDrive\\Desktop\\Programmed Games\\HTML\\Vapor v3 fork\\netlify\\functions"
 
 [build.environment]
 
@@ -23,3 +22,44 @@ publishOrigin = "default"
 [build.processing.js]
 
 [build.services]
+
+[functions]
+
+[functions."*"]
+included_files = ["default/**", "protected/**"]
+
+[[redirects]]
+from = "/api/out"
+to = "/.netlify/functions/out"
+status = 200.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/api/word"
+to = "/.netlify/functions/word"
+status = 200.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/*"
+to = "/.netlify/functions/app"
+status = 200.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]

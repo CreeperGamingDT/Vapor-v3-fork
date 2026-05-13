@@ -3,12 +3,7 @@ const path = require("path");
 
 const { isAuthenticated } = require("./auth");
 
-const ROOT = path.resolve(__dirname, "..", "..");
-
-const DEFAULT_ROOT = path.join(ROOT, "default");
-const PROTECTED_ROOT = path.join(ROOT, "protected");
-
-const PUBLIC_INDEX = path.join(DEFAULT_ROOT, "index.html");
+const ROOT = process.cwd();
 
 // content types
 const CONTENT_TYPES = {
@@ -31,54 +26,7 @@ const CONTENT_TYPES = {
     ".woff2": "font/woff2"
 };
 
-const SIGN_OUT_SNIPPET = `
-<script data-auth-signout-widget>
-(function() {
-  if (window.top !== window.self) return;
 
-  function mount() {
-    if (document.getElementById("auth-signout-btn")) return;
-
-    const button = document.createElement("button");
-
-    button.id = "auth-signout-btn";
-    button.textContent = "Sign out";
-
-    Object.assign(button.style, {
-      position: "fixed",
-      top: "16px",
-      right: "16px",
-      zIndex: "999999",
-      border: "0",
-      borderRadius: "999px",
-      padding: "10px 16px",
-      background: "#111827",
-      color: "white",
-      cursor: "pointer"
-    });
-
-    button.onclick = async () => {
-      try {
-        await fetch("/api/out", {
-          method: "POST",
-          credentials: "same-origin"
-        });
-      } catch {}
-
-      location.href = "/";
-    };
-
-    document.body.appendChild(button);
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", mount, { once: true });
-  } else {
-    mount();
-  }
-})();
-</script>
-`;
 
 function getContentType(filePath) {
     return CONTENT_TYPES[path.extname(filePath).toLowerCase()] || "application/octet-stream";
@@ -93,16 +41,16 @@ function isTextFile(contentType) {
     );
 }
 
-function injectSignOut(html) {
-    if (html.includes("data-auth-signout-widget")) {
-        return html;
+
+
+function getRequestPath(event) {
+    if (event.rawUrl) {
+        try {
+            return new URL(event.rawUrl).pathname || "/";
+        } catch {}
     }
 
-    if (/<\/body>/i.test(html)) {
-        return html.replace(/<\/body>/i, `${SIGN_OUT_SNIPPET}</body>`);
-    }
-
-    return html + SIGN_OUT_SNIPPET;
+    return event.path || "/";
 }
 
 function safeResolve(root, requestPath) {
@@ -110,11 +58,13 @@ function safeResolve(root, requestPath) {
         .replace(/\\/g, "/")
         .replace(/^\/+/, "");
 
+    // folder -> index.html
     if (!clean || clean.endsWith("/")) {
         clean += "index.html";
     }
 
-    if (!path.extname(clean)) {
+    // extensionless -> .html
+    else if (!path.extname(clean)) {
         clean += ".html";
     }
 
@@ -128,10 +78,15 @@ function safeResolve(root, requestPath) {
 }
 
 function serveFile(filePath, options = {}) {
-    if (!fs.existsSync(filePath)) {
+    if (!filePath || !fs.existsSync(filePath)) {
+        console.warn(`File not found: ${filePath}`);
+
         return {
             statusCode: 404,
-            body: "Not found."
+            headers: {
+                "Content-Type": "text/plain; charset=utf-8"
+            },
+            body: "Not found. "+filePath
         };
     }
 
@@ -142,6 +97,7 @@ function serveFile(filePath, options = {}) {
         "Cache-Control": "no-store"
     };
 
+    // head request
     if (options.method === "HEAD") {
         return {
             statusCode: 200,
@@ -150,13 +106,10 @@ function serveFile(filePath, options = {}) {
         };
     }
 
-    // text files
+    // text response
     if (isTextFile(contentType)) {
         let content = fs.readFileSync(filePath, "utf8");
 
-        if (options.injectSignOut && contentType.startsWith("text/html")) {
-            content = injectSignOut(content);
-        }
 
         return {
             statusCode: 200,
@@ -165,7 +118,7 @@ function serveFile(filePath, options = {}) {
         };
     }
 
-    // binary files
+    // binary response
     return {
         statusCode: 200,
         headers,
@@ -180,40 +133,44 @@ exports.handler = async function(event) {
     if (method !== "GET" && method !== "HEAD") {
         return {
             statusCode: 405,
+            headers: {
+                "Content-Type": "text/plain; charset=utf-8"
+            },
             body: "Method not allowed."
         };
     }
 
-    // not logged in
+    const pathname = getRequestPath(event);
+
+    // logged out -> /default/*
     if (!isAuthenticated(event.headers || {})) {
-        const pathname =
-            event.rawUrl
-                ? new URL(event.rawUrl).pathname
-                : event.path || "/";
-        
-        const filePath = safeResolve(DEFAULT_ROOT, pathname);
-        
-        return serveFile(filePath || PUBLIC_INDEX, {
+        const filePath = safeResolve(
+            path.join(ROOT, "default"),
+            pathname
+        );
+
+        return serveFile(filePath, {
             method
         });
     }
 
-    const pathname =
-        event.rawUrl
-            ? new URL(event.rawUrl).pathname
-            : event.path || "/";
-
-    const filePath = safeResolve(PROTECTED_ROOT, pathname);
+    // logged in -> /protected/*
+    const filePath = safeResolve(
+        path.join(ROOT, "protected"),
+        pathname
+    );
 
     if (!filePath) {
         return {
             statusCode: 403,
+            headers: {
+                "Content-Type": "text/plain; charset=utf-8"
+            },
             body: "Forbidden."
         };
     }
 
     return serveFile(filePath, {
         method,
-        injectSignOut: true
     });
 };
