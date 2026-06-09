@@ -21,3 +21,8 @@
   to = "/.netlify/functions/app"
   status = 200
   force = true
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cross-Origin-Opener-Policy = "same-origin"
+    Cross-Origin-Embedder-Policy = "require-corp"   
